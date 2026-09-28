@@ -59,6 +59,8 @@ export type SiteContent = {
     headline: Record<Locale, [string, string, string]>;
     description: Localized;
     hero: Media;
+    /** Additional slides after the original hero image. */
+    heroSlides: Media[];
     story: Media;
   };
   categories: Category[];

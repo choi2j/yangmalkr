@@ -21,7 +21,7 @@ const money = z.number().int().min(0).max(100000000).nullable();
 export const contentSchema = z.object({
   schemaVersion: z.literal(1),
   settings: z.object({ storeUrl: https, businessEmail: z.email().max(254), phone: z.string().max(80), fax: z.string().max(80), address: localized }),
-  home: z.object({ headline: z.object({ ko: z.tuple([text, text, text]), en: z.tuple([text, text, text]) }), description: localized, hero: media, story: media }),
+  home: z.object({ headline: z.object({ ko: z.tuple([text, text, text]), en: z.tuple([text, text, text]) }), description: localized, hero: media, heroSlides: z.array(media).max(19).default([]), story: media }),
   categories: z.array(z.object({ id, slug, name: localized, subtitle: localized, description: localized, image: media, order: z.number().int().min(0).max(10000) })).min(1).max(50),
   products: z.array(z.object({
     id, slug, categoryId: id, name: localized, summary: localized, description: localized,
@@ -44,7 +44,7 @@ export const contentSchema = z.object({
 });
 export function parseContent(value: unknown): SiteContent { return contentSchema.parse(value); }
 export function mapMedia(content: SiteContent, fn: (m: Media) => Media): SiteContent {
-  return { ...content, home: { ...content.home, hero: fn(content.home.hero), story: fn(content.home.story) }, categories: content.categories.map(c => ({ ...c, image: fn(c.image) })), products: content.products.map(p => ({ ...p, images: p.images.map(fn), detailImages: p.detailImages.map(fn) })) };
+  return { ...content, home: { ...content.home, hero: fn(content.home.hero), heroSlides: content.home.heroSlides.map(fn), story: fn(content.home.story) }, categories: content.categories.map(c => ({ ...c, image: fn(c.image) })), products: content.products.map(p => ({ ...p, images: p.images.map(fn), detailImages: p.detailImages.map(fn) })) };
 }
 export function published(content: SiteContent): SiteContent {
   return { ...content, categories: [...content.categories].sort((a,b) => a.order-b.order), products: content.products.filter(p => p.status === 'published').sort((a,b) => a.order-b.order) };

@@ -344,6 +344,7 @@ export const seedContent: SiteContent = {
       ),
       fit: 'cover',
     },
+    heroSlides: [],
     story: {
       ...media(
         'home-story',

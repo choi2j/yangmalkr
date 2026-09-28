@@ -2,7 +2,7 @@
 import Link from 'next/link';
 import type { SiteContent } from '@/lib/content/types';
 import { useLanguage } from './language-provider';
-import { Media } from './media';
+import { HeroCarousel } from './hero-carousel';
 import { ProductCard } from './product-card';
 import { StoreBanner, TextLink } from './site-shell';
 
@@ -15,10 +15,10 @@ export function HomePage({ content }: { content: SiteContent }) {
   const productCovers = content.products
     .map((product) => product.images[0])
     .filter((image) => image?.src);
-  // Use one product cover until a dedicated hero is set in the CMS.
-  const heroImage = content.home.hero.src
-    ? content.home.hero
-    : productCovers[0] ?? content.home.hero;
+  const heroImages = [content.home.hero, ...content.home.heroSlides].filter(
+    (image) => image.src,
+  );
+  if (!heroImages.length) heroImages.push(productCovers[0] ?? content.home.hero);
   return (
     <main id="main">
       <section className="container home-hero">
@@ -36,9 +36,10 @@ export function HomePage({ content }: { content: SiteContent }) {
             {t('나에게 맞는 양말 찾기', 'Find your everyday pair')}
           </Link>
         </div>
-        <div className="hero-visual">
-          <Media asset={heroImage} slot="hero" priority />
-        </div>
+        <HeroCarousel
+          key={JSON.stringify(heroImages.map((image) => [image.id, image.src]))}
+          images={heroImages}
+        />
       </section>
       <section className="container section collection-section">
         <div className="section-heading">
